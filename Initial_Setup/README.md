@@ -6,3 +6,14 @@ Requisitos:
 - Regular SSD
 - 2 GB ($12/mo)
 
+Após criar a VM, acessar via SSH e executar o passo a passo descrito a seguir:
+
+### Atualize os pacotes existentes
+```
+sudo apt update && sudo apt upgrade -y
+```
+
+### Instalar Ansible e Git
+```
+sudo apt install ansible -y && sudo apt install ansible -y
+```
