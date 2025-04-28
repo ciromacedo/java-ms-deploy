@@ -95,6 +95,13 @@
               args:
                 executable: /bin/bash
 
+            - name: Verificar se o container PostgreSQL já existe
+              shell: |
+                docker ps -a --format '{{ "{{.Names}}" }}' | grep -w {{ postgres_container_name }} || true
+              args:
+                executable: /bin/bash
+              register: postgres_container_check
+
             - name: Criar script de inicialização SQL para múltiplos bancos
               copy:
                 dest: "/tmp/init-multiple-dbs.sql"
@@ -102,6 +109,7 @@
                   CREATE DATABASE "{{ postgres_db1 }}";
                   CREATE DATABASE "{{ postgres_db2 }}";
                 mode: '0644'
+              when: postgres_container_check.stdout == ""
 
             - name: Subir container PostgreSQL 17 na rede interna usando shell
               shell: |
@@ -113,18 +121,21 @@
               args:
                 executable: /bin/bash
                 creates: "/var/lib/docker/containers/{{ postgres_container_name }}"
+              when: postgres_container_check.stdout == ""
 
             - name: Copiar script SQL para o container
               shell: |
                 docker cp /tmp/init-multiple-dbs.sql {{ postgres_container_name }}:/docker-entrypoint-initdb.d/init-multiple-dbs.sql
               args:
                 executable: /bin/bash
+              when: postgres_container_check.stdout == ""
 
             - name: Reiniciar container PostgreSQL para executar script de criação dos bancos
               shell: |
                 docker restart {{ postgres_container_name }}
               args:
                 executable: /bin/bash
+              when: postgres_container_check.stdout == ""
 
 
 
