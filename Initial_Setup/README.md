@@ -20,6 +20,8 @@ sudo apt install ansible -y && sudo apt install ansible -y && sudo apt update
 
 ### Instalar Collections Ansible
 ```
+apt update
+apt install python3-psycopg2 -y
 ansible-galaxy collection install community.postgresql
 ```
 

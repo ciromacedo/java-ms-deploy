@@ -143,7 +143,42 @@
               when: postgres_container_check.stdout != ""
 
 
+            - name: Garantir que o pacote python3-psycopg2 está instalado
+              apt:
+                name: python3-psycopg2
+                state: present
+                update_cache: true
 
+            - name: Garantir que a collection community.postgresql esteja instalada
+              ansible.builtin.shell: |
+                ansible-galaxy collection list | grep community.postgresql || ansible-galaxy collection install community.postgresql
+              args:
+                executable: /bin/bash
+              register: postgresql_collection_installed
+              changed_when: "'was installed successfully' in postgresql_collection_installed.stdout or postgresql_collection_installed.rc == 0"
+
+            ###############################
+            # 3. Healthcheck PostgreSQL (aguardando resposta)
+            ###############################
+            - name: Aguardar o banco PostgreSQL aceitar conexões
+              community.postgresql.postgresql_ping:
+                login_host: "{{ postgres_container_name }}"
+                login_user: "{{ postgres_user }}"
+                login_password: "{{ postgres_password }}"
+                db: "{{ postgres_db1 }}"
+                port: 5432
+              register: postgres_ping_result
+              retries: 10
+              delay: 5
+              until: postgres_ping_result.is_available
+
+            ###############################
+            # 4. Mensagem de sucesso (opcional, elegante)
+            ###############################
+            - name: Informar que o banco PostgreSQL está respondendo corretamente
+              debug:
+                msg: "Banco de dados PostgreSQL está aceitando conexões e pronto para uso."
+              when: postgres_ping_result.is_available
 
 
 
