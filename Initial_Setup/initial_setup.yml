@@ -137,6 +137,11 @@
                 executable: /bin/bash
               when: postgres_container_check.stdout == ""
 
+            - name: Informar que o container PostgreSQL já existe
+              debug:
+                msg: "O container {{ postgres_container_name }} já existe. Pulando criação."
+              when: postgres_container_check.stdout != ""
+
 
 
 
