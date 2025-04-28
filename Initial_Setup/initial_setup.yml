@@ -157,12 +157,16 @@
               register: postgresql_collection_installed
               changed_when: "'was installed successfully' in postgresql_collection_installed.stdout or postgresql_collection_installed.rc == 0"
 
-            ###############################
-            # 3. Healthcheck PostgreSQL (aguardando resposta)
-            ###############################
-            - name: Aguardar o banco PostgreSQL aceitar conexões
+            - name: Obter IP interno do container PostgreSQL
+              shell: |
+                docker inspect -f '{{ "{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}' {{ postgres_container_name }}
+              args:
+                executable: /bin/bash
+              register: postgres_container_ip
+
+            - name: Aguardar o banco PostgreSQL aceitar conexões via IP interno
               community.postgresql.postgresql_ping:
-                login_host: "{{ postgres_container_name }}"
+                login_host: "{{ postgres_container_ip.stdout }}"
                 login_user: "{{ postgres_user }}"
                 login_password: "{{ postgres_password }}"
                 db: "{{ postgres_db1 }}"
