@@ -142,7 +142,6 @@
                 msg: "O container {{ postgres_container_name }} já existe. Pulando criação."
               when: postgres_container_check.stdout != ""
 
-
             - name: Garantir que o pacote python3-psycopg2 está instalado
               apt:
                 name: python3-psycopg2
@@ -176,9 +175,6 @@
               delay: 5
               until: postgres_ping_result.is_available
 
-            ###############################
-            # 4. Mensagem de sucesso (opcional, elegante)
-            ###############################
             - name: Informar que o banco PostgreSQL está respondendo corretamente
               debug:
                 msg: "Banco de dados PostgreSQL está aceitando conexões e pronto para uso."
