@@ -17,3 +17,13 @@ sudo apt update && sudo apt upgrade -y
 ```
 sudo apt install ansible -y && sudo apt install ansible -y
 ```
+
+### Clonar o repositório de instalação
+```
+git clone https://github.com/ciromacedo/java-ms-deploy.git
+```
+
+### Executar o playbook de implantação
+```
+cd java-ms-deploy && ansible-playbook -K initial_setup.yml
+```
