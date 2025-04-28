@@ -86,6 +86,6 @@
               community.docker.docker_network:
                 name: "{{ NOME_REDE_INTERNA_CONTAINER }}"
                 driver: bridge
-                ipam_options:
+                ipam_config:
                   - subnet: "{{ SUBREDE_INTERNA }}"
                 state: present
