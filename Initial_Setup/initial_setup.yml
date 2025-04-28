@@ -4,7 +4,13 @@
         become: yes
         remote_user: root
         vars:
-             NOME_REDE_INTERNA_CONTAINER: 'embrapi'
+             postgres_user: "postgres"
+             postgres_password: "12345678"  # Em produção, melhor criptografar via Ansible Vault
+             postgres_db1: "access-control"
+             postgres_db2: "data-reports"
+             postgres_container_name: "postgres-17"
+             postgres_image: "postgres:17"
+             NOME_REDE_DOCKER: 'embrapi'
              SUBREDE_INTERNA: '192.187.3.0/24'
              docker_apt_key: /etc/apt/keyrings/docker.gpg
              docker_repo: "deb [arch=amd64 signed-by={{ docker_apt_key }}] https://download.docker.com/linux/ubuntu mantic stable"
@@ -82,11 +88,35 @@
                 enabled: true
                 state: started
 
-
             - name: Criar rede interna Docker para microsserviços
               shell: |
-                docker network inspect {{ NOME_REDE_INTERNA_CONTAINER }} || \
-                docker network create --subnet={{ SUBREDE_INTERNA }} --driver bridge {{ NOME_REDE_INTERNA_CONTAINER }}
+                docker network inspect {{ NOME_REDE_DOCKER }} || \
+                docker network create --subnet={{ SUBREDE_INTERNA }} --driver bridge {{ NOME_REDE_DOCKER }}
               args:
                 executable: /bin/bash
+
+            - name: Criar script de inicialização SQL para múltiplos bancos
+              copy:
+                dest: "/tmp/init-multiple-dbs.sql"
+                content: |
+                  CREATE DATABASE "{{ postgres_db1 }}";
+                  CREATE DATABASE "{{ postgres_db2 }}";
+                mode: '0644'
+
+            - name: Subir container PostgreSQL 17 na rede interna
+              community.docker.docker_container:
+                name: "{{ postgres_container_name }}"
+                image: "{{ postgres_image }}"
+                networks:
+                  - name: "{{ postgres_network }}"
+                env:
+                  POSTGRES_USER: "{{ postgres_user }}"
+                  POSTGRES_PASSWORD: "{{ postgres_password }}"
+                volumes:
+                  - /tmp/init-multiple-dbs.sql:/docker-entrypoint-initdb.d/init-multiple-dbs.sql:ro
+                ports: []
+                restart_policy: unless-stopped
+                state: started
+
+
 

@@ -18,6 +18,11 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install ansible -y && sudo apt install ansible -y && sudo apt update 
 ```
 
+### Instalar Collections Ansible
+```
+ansible-galaxy collection install community.postgresql
+```
+
 ### Clonar o repositório de instalação
 ```
 git clone https://github.com/ciromacedo/java-ms-deploy.git
