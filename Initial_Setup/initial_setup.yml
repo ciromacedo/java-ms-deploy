@@ -88,4 +88,5 @@
                 driver: bridge
                 ipam_config:
                   - subnet: "{{ SUBREDE_INTERNA }}"
+                docker_host: "unix:///var/run/docker.sock"
                 state: present

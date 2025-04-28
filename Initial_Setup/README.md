@@ -13,9 +13,9 @@ Após criar a VM, acessar via SSH e executar o passo a passo descrito a seguir:
 sudo apt update && sudo apt upgrade -y
 ```
 
-### Instalar Ansible e Git
+### Instalar Ansible + Git + Dependências
 ```
-sudo apt install ansible -y && sudo apt install ansible -y
+sudo apt install ansible -y && sudo apt install ansible -y && sudo apt update && apt install python3-docker -y
 ```
 
 ### Instalar Collections extras para o Ansible
