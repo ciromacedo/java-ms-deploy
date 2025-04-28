@@ -82,11 +82,11 @@
                 enabled: true
                 state: started
 
-            - name: Garantir que a rede interna do Docker exista
-              community.docker.docker_network:
-                name: "{{ NOME_REDE_INTERNA_CONTAINER }}"
-                driver: bridge
-                ipam_config:
-                  - subnet: "{{ SUBREDE_INTERNA }}"
-                docker_host: "unix:///var/run/docker.sock"
-                state: present
+
+            - name: Criar rede interna Docker para microsserviços
+              shell: |
+                docker network inspect {{ NOME_REDE_INTERNA_CONTAINER }} || \
+                docker network create --subnet={{ SUBREDE_INTERNA }} --driver bridge {{ NOME_REDE_INTERNA_CONTAINER }}
+              args:
+                executable: /bin/bash
+

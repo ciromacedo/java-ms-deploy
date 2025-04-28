@@ -15,12 +15,7 @@ sudo apt update && sudo apt upgrade -y
 
 ### Instalar Ansible + Git + Dependências
 ```
-sudo apt install ansible -y && sudo apt install ansible -y && sudo apt update && apt install python3-docker -y
-```
-
-### Instalar Collections extras para o Ansible
-```
-ansible-galaxy collection install community.docker
+sudo apt install ansible -y && sudo apt install ansible -y && sudo apt update 
 ```
 
 ### Clonar o repositório de instalação
