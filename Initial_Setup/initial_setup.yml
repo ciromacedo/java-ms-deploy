@@ -103,20 +103,31 @@
                   CREATE DATABASE "{{ postgres_db2 }}";
                 mode: '0644'
 
-            - name: Subir container PostgreSQL 17 na rede interna
-              community.docker.docker_container:
-                name: "{{ postgres_container_name }}"
-                image: "{{ postgres_image }}"
-                networks:
-                  - name: "{{ NOME_REDE_DOCKER }}"
-                env:
-                  POSTGRES_USER: "{{ postgres_user }}"
-                  POSTGRES_PASSWORD: "{{ postgres_password }}"
-                volumes:
-                  - /tmp/init-multiple-dbs.sql:/docker-entrypoint-initdb.d/init-multiple-dbs.sql:ro
-                ports: []
-                restart_policy: unless-stopped
-                state: started
+            - name: Subir container PostgreSQL 17 na rede interna usando shell
+              shell: |
+                docker run -d --name {{ postgres_container_name }} \
+                  --network {{ NOME_REDE_DOCKER }} \
+                  -e POSTGRES_USER={{ postgres_user }} \
+                  -e POSTGRES_PASSWORD={{ postgres_password }} \
+                  postgres:17
+              args:
+                executable: /bin/bash
+                creates: "/var/lib/docker/containers/{{ postgres_container_name }}"
+
+            - name: Copiar script SQL para o container
+              shell: |
+                docker cp /tmp/init-multiple-dbs.sql {{ postgres_container_name }}:/docker-entrypoint-initdb.d/init-multiple-dbs.sql
+              args:
+                executable: /bin/bash
+
+            - name: Reiniciar container PostgreSQL para executar script de criação dos bancos
+              shell: |
+                docker restart {{ postgres_container_name }}
+              args:
+                executable: /bin/bash
+
+
+
 
 
 
