@@ -108,7 +108,7 @@
                 name: "{{ postgres_container_name }}"
                 image: "{{ postgres_image }}"
                 networks:
-                  - name: "{{ postgres_network }}"
+                  - name: "{{ NOME_REDE_DOCKER }}"
                 env:
                   POSTGRES_USER: "{{ postgres_user }}"
                   POSTGRES_PASSWORD: "{{ postgres_password }}"
