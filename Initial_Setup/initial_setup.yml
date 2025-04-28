@@ -4,6 +4,8 @@
         become: yes
         remote_user: root
         vars:
+             NOME_REDE_INTERNA_CONTAINER: 'embrapi'
+             SUBREDE_INTERNA: '192.187.3.0/24'
              docker_apt_key: /etc/apt/keyrings/docker.gpg
              docker_repo: "deb [arch=amd64 signed-by={{ docker_apt_key }}] https://download.docker.com/linux/ubuntu mantic stable"
         tasks:
@@ -79,3 +81,11 @@
                 name: docker
                 enabled: true
                 state: started
+
+            - name: Garantir que a rede interna do Docker exista
+              community.docker.docker_network:
+                name: "{{ NOME_REDE_INTERNA_CONTAINER }}"
+                driver: bridge
+                ipam_options:
+                  - subnet: "{{ SUBREDE_INTERNA }}"
+                state: present
