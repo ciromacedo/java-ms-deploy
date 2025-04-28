@@ -25,5 +25,5 @@ git clone https://github.com/ciromacedo/java-ms-deploy.git
 
 ### Executar o playbook de implantação
 ```
-cd java-ms-deploy && ansible-playbook -K initial_setup.yml
+cd java-ms-deploy/Initial_Setup && ansible-playbook -K initial_setup.yml
 ```
